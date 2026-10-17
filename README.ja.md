@@ -137,3 +137,12 @@ CairoSVG の LGPL-3.0-or-later や Pillow の MIT-CMU などを変更するも�
 ネイティブライブラリや他プロジェクトのコードは同梱していません。
 
 [English README に戻る](README.md)
+
+## ファイル形式の独立仕様
+
+保存形式のドラフトは [vector-png-spec](https://github.com/makotosan/vector-png-spec)
+で管理しています。このリポジトリは Python／Codex 向けの参照実装です。
+仕様は保存形式・安全性プロファイル・描画比較を区別します。現在の実装には
+未監査の相違点があるため、完全準拠の宣言ではありません。
+[実装と移行の注意事項](https://github.com/makotosan/vector-png-spec/blob/main/IMPLEMENTATIONS.md)
+を参照してください。
