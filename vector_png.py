@@ -101,6 +101,10 @@ def _render_worker(svg, width, height, pipe):
         # Windows Cairo DLL directory can be supplied without modifying global PATH.
         dll_dir = os.environ.get("VECTOR_PNG_CAIRO_DIR")
         handle = os.add_dll_directory(dll_dir) if os.name == "nt" and dll_dir else None
+        if os.name == "nt" and dll_dir:
+            # ctypes.find_library and CFFI's legacy loader also need PATH.
+            # This changes only the disposable worker's environment.
+            os.environ["PATH"] = dll_dir + os.pathsep + os.environ.get("PATH", "")
         from cairosvg.surface import PNGSurface
         png = PNGSurface.convert(bytestring=svg.encode("utf-8"), unsafe=False,
                                  output_width=width, output_height=height,

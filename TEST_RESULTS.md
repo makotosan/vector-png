@@ -20,7 +20,9 @@ The restricted execution environment initially blocked temporary-directory acces
 and multiprocessing. Tests passed with normal approved execution permissions.
 The first build attempt lacked setuptools; adding the build tools resolved it.
 
-Windows/macOS/Linux CI is configured for Python 3.10 and 3.13. Remote results
-must be checked in GitHub Actions; local success does not establish those results.
+Initial remote CI passed Linux/macOS on Python 3.10 and 3.13. Windows exposed
+CFFI DLL discovery requiring PATH in addition to add_dll_directory; the render
+worker now sets both within its own process. The corrected run's results are
+available in GitHub Actions.
 The optional skill is packaged in the source archive/repository, not in the CLI wheel.
 No global Codex installation or machine-wide Python modification was performed.
