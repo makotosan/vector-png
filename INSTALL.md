@@ -1,5 +1,7 @@
 # Install vector-png as a user skill
 
+[日本語インストール手順](INSTALL.ja.md)
+
 Destination: **`~/.agents/skills/vector-png/`**, discoverable across projects.
 Python 3.10+ and native Cairo are required. Existing skills are never overwritten.
 
@@ -63,7 +65,8 @@ destination. If macOS cannot find Cairo, export
 
 1. Confirm that the roundtrip check reports success. It verifies generation,
    exact SVG extraction, editing, resaving and pixel/source comparison.
-2. Open a **new Codex chat/session**, then invoke `$vector-png`.
+2. Invoke `$vector-png` in Codex. Existing chats can use it once the skill is
+   recognized. If it does not appear, restart Codex and reopen the chat.
 3. Ask it to create and inspect a PNG. Expected JSON: `"raster_matches_svg": true`.
 
 The skill instructs Codex to use its local `.venv`. The helper also works from
