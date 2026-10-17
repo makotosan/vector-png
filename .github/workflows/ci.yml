@@ -52,3 +52,39 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: ./install-vector-png.ps1 -CairoDirectory $env:VECTOR_PNG_CAIRO_DIR
+
+  specification-reference:
+    name: Pinned specification fixture sanity (not implementation conformance)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Read and validate specification pin
+        id: specification
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          pin = json.loads(Path('spec-reference.json').read_text(encoding='utf-8'))
+          assert pin['repository'] == 'makotosan/vector-png-spec'
+          assert re.fullmatch(r'[0-9a-f]{40}', pin['revision'])
+          assert pin['normative_document'] == 'SPEC.md'
+          assert pin['informative_translation'] == 'SPEC.ja.md'
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write('revision=' + pin['revision'] + '\n')
+          PY
+      - name: Checkout pinned specification
+        uses: actions/checkout@v4
+        with:
+          repository: makotosan/vector-png-spec
+          ref: ${{ steps.specification.outputs.revision }}
+          path: .spec-reference
+          persist-credentials: false
+      - name: Check pinned fixture catalog (not CLI conformance)
+        working-directory: .spec-reference
+        run: |
+          python -m unittest discover -s tests -v
+          python tools/build_fixtures.py --check

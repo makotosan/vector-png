@@ -193,3 +193,13 @@ Container validity, SVG safety profiles and renderer-specific pixel checks are
 separate claims. The initial implementation is not yet audited against every
 draft requirement, so this is not a declaration of complete conformance.
 See [implementation and migration notes](https://github.com/makotosan/vector-png-spec/blob/main/IMPLEMENTATIONS.md).
+
+Development must follow [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[repository rules](AGENTS.md), using the exact revision in
+[spec-reference.json](spec-reference.json). Read the pinned normative specification,
+profile and implementation guidance before changing format behavior.
+Track remaining audits and local policies in
+[SPEC_COMPATIBILITY.md](SPEC_COMPATIBILITY.md). The specification-reference CI
+job checks pinned upstream fixture consistency; it does not certify this CLI's
+conformance. Updating the baseline requires reviewing upstream changes and updating
+the pin, compatibility record, relevant tests and bilingual documentation together.

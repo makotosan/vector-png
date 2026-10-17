@@ -198,3 +198,12 @@ CairoSVG（LGPL-3.0-or-later）や Pillow（MIT-CMU）などの依存先のラ�
 完全準拠の宣言ではありません。
 [実装と移行の注意事項](https://github.com/makotosan/vector-png-spec/blob/main/IMPLEMENTATIONS.md)
 を参照してください。
+
+開発は [CONTRIBUTING.ja.md](CONTRIBUTING.ja.md) と
+[リポジトリの作業ルール](AGENTS.md) に従い、
+[spec-reference.json](spec-reference.json) の正確なリビジョンを使ってください。
+形式の振る舞いを変更する前に、固定した正規仕様、プロファイル、実装ガイドを読みます。
+残る監査とローカル方針は [SPEC_COMPATIBILITY.ja.md](SPEC_COMPATIBILITY.ja.md) に記録します。
+仕様参照の CI ジョブは、固定した上流のテストデータの整合性を検査するものであり、
+この CLI の準拠を認証するものではありません。参照基準の更新では上流の変更をレビューし、
+参照設定、互換性の記録、関連テスト、日英ドキュメントを同時に更新する必要があります。
