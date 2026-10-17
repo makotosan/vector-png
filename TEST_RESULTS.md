@@ -24,5 +24,11 @@ Initial remote CI passed Linux/macOS on Python 3.10 and 3.13. Windows exposed
 CFFI DLL discovery requiring PATH in addition to add_dll_directory; the render
 worker now sets both within its own process. The corrected run's results are
 available in GitHub Actions.
+
+Final remote verification (2026-10-18 Asia/Tokyo): **all six jobs passed** for
+Windows, macOS and Linux on Python 3.10 and 3.13, including pytest, package build
+and the standalone skill smoke test. Tested implementation commit:
+`a85cccff5172d23bf9d27ff3e695c2aedf8db46a`.
+[Successful workflow run](https://github.com/makotosan/vector-png/actions/runs/39043089032).
 The optional skill is packaged in the source archive/repository, not in the CLI wheel.
 No global Codex installation or machine-wide Python modification was performed.
