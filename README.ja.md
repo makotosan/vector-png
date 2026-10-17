@@ -61,10 +61,10 @@ CLI のテスト成功だけでは、既に開いている Codex のスキル一
 
 ```sh
 python -m pip install -e ".[test]"
-python vector_png.py create examples/fireworks.svg fireworks.png --width 512 --height 512
-python vector_png.py extract fireworks.png editable.svg
+python vector_png.py create examples/fireworks.svg editable-art.png --width 512 --height 512
+python vector_png.py extract editable-art.png editable.svg
 # editable.svg を編集してから再保存
-python vector_png.py update fireworks.png editable.svg revised.png
+python vector_png.py update editable-art.png editable.svg revised.png
 python vector_png.py inspect revised.png
 ```
 
