@@ -14,7 +14,7 @@
 
 ## インストール
 
-詳しい OS 別の手順は [INSTALL.md](INSTALL.md) にあります。
+詳しい OS 別の手順は [日本語インストール手順](INSTALL.ja.md) にあります。
 保存先は **`~/.agents/skills/vector-png/`** で、全プロジェクトから利用する
 ユーザースキルとして配置します。Python 3.10 以降とネイティブ Cairo が必要です。
 
@@ -46,10 +46,11 @@ MSYS2 から導入する場合は、そのターミナルで
 macOS は `brew install cairo`、Debian／Ubuntu は
 `sudo apt-get install libcairo2` で Cairo を導入できます。
 その後のスキルのコピー、仮想環境作成、依存導入のコマンドは
-[INSTALL.md の macOS／Linux 手順](INSTALL.md#macos--linux) を参照してください。
+[日本語インストール手順の macOS／Linux 節](INSTALL.ja.md#macoslinux) を参照してください。
 
-配置と往復テストが成功したら、**新しい Codex チャット／セッション**を開き、
-`$vector-png` を呼び出します。PNG の作成と inspect を依頼し、
+配置と往復テストが成功したら、Codex で `$vector-png` を呼び出します。
+既存チャットでも認識されていれば利用できます。認識されない場合は Codex を
+再起動し、チャットを開き直してください。PNG の作成と inspect を依頼し、
 `"raster_matches_svg": true` が返ることを確認してください。
 CLI のテスト成功だけでは、既に開いている Codex のスキル一覧が更新されたことは
 確認できません。
