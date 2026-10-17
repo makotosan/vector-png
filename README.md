@@ -134,3 +134,11 @@ The MIT license covers this project's code, not a relicensing of its dependencie
 The preceding ChatGPT handoff's assistant bodies were unavailable (only content
 reference markers were retrievable). This implementation follows the explicit
 continuation request; it does not claim fidelity to an unavailable detailed spec.
+
+## Independent format specification
+
+The application-independent draft lives in [vector-png-spec](https://github.com/makotosan/vector-png-spec).
+This repository is the Python/Codex reference implementation. Container validity,
+SVG safety profiles and renderer-specific pixel checks are separate claims.
+The initial implementation is not yet audited against every draft requirement;
+see [implementation and migration notes](https://github.com/makotosan/vector-png-spec/blob/main/IMPLEMENTATIONS.md).
