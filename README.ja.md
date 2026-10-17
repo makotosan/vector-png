@@ -1,11 +1,16 @@
-# vector-png
+# vector-png — Codex 用スキル
 
 [English README](README.md)
 
-SVG の編集用ソースを圧縮 iTXt チャンクへ埋め込む、PNG 用 Python CLI と
-Codex ユーザースキルです。通常の画像ビューアーで表示できる PNG のまま、
-元の SVG を取り出し、編集して再保存できます。Pillow、CairoSVG、defusedxml
-を使用しています。本プロジェクトの独自コードは MIT ライセンスです。
+**vector-png は OpenAI Codex 用のユーザースキルです。**
+`~/.agents/skills/vector-png/` にインストールし、Codex で `$vector-png` を
+呼び出すと、SVG を圧縮 iTXt チャンクに埋め込んだ PNG の生成・抽出・編集・
+再保存・検査を依頼できます。全プロジェクトで利用できます。
+
+同梱の Python CLI とライブラリがスキルの処理を担い、単独でも使用できます。
+通常の画像ビューアーで表示できる PNG のまま、元の SVG を取り出して編集・
+再保存できます。Pillow、CairoSVG、defusedxml を使用しています。
+本プロジェクトの独自コードは MIT ライセンスです。
 
 ## インストール
 
