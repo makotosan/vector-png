@@ -1,5 +1,17 @@
 # Validation results
 
+## Integrity verification and user-skill installer (2026-10-18)
+
+The updated user skill passed **41 local pytest tests**, including pixel and
+embedded-source tampering rejection. The standalone create → extract → edit →
+update → inspect check passed from outside the skill directory. Skill syntax
+validation passed. The PowerShell installer passed syntax parsing. The local
+user-skill destination is outside this session's permitted write roots, so local
+installation/discovery has not been performed. INSTALL.md includes the exact
+installation and fresh-session discovery steps. Updated CI also runs the complete
+Windows installer on its disposable runners and a roundtrip on every platform.
+The previous six-job success below applies to the preceding implementation.
+
 Local Windows x64 / Python 3.13, 2026-10-17 (Asia/Tokyo).
 
 - **39 tests passed**, 3.72 seconds, using Pillow 13.0.0, CairoSVG 2.9.1,

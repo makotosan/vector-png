@@ -1,5 +1,6 @@
-include README.md LICENSE OSS_REVIEW.md TEST_RESULTS.md
+include README.md LICENSE OSS_REVIEW.md TEST_RESULTS.md INSTALL.md install-vector-png.ps1 requirements.txt
 recursive-include skills *.md *.py
+recursive-include skills *.txt *.ini
 recursive-include examples *.svg
 recursive-include tests *.py
 recursive-include .github *.yml

@@ -53,7 +53,7 @@ def test_cli_update_extract_inspect_and_no_clobber(tmp_path, capsys):
     v.main(['extract', str(png), str(extracted)])
     assert extracted.read_text(encoding='utf-8') == svg.read_text(encoding='utf-8')
     v.main(['inspect', str(png)])
-    assert 'not checked' in capsys.readouterr().out
+    assert '"raster_matches_svg": true' in capsys.readouterr().out
 
 
 @pytest.mark.parametrize('body', [
@@ -146,3 +146,36 @@ def test_processing_instruction_rejected():
 def test_render_timeout():
     with pytest.raises(v.VectorPNGError, match='timed out'):
         v.render(SVG, 32, 24, timeout=0)
+
+
+def test_tampered_raster_is_rejected(tmp_path, capsys):
+    p = tmp_path / 'tampered.png'
+    info = PngInfo()
+    info.add_itxt(v.KEY, SVG, zip=True)
+    Image.new('RGBA', (32, 24), 'green').save(p, pnginfo=info)
+    assert v.inspect(p)['raster_matches_svg'] is False
+    with pytest.raises(v.VectorPNGError, match='do not match'):
+        v.read(p)
+    with pytest.raises(SystemExit) as exc:
+        v.main(['inspect', str(p)])
+    assert exc.value.code == 2
+    assert '"raster_matches_svg": false' in capsys.readouterr().out
+    output = tmp_path / 'unsafe-extract.svg'
+    with pytest.raises(SystemExit):
+        v.main(['extract', str(p), str(output)])
+    assert not output.exists()
+
+
+def test_tampered_source_update_preserves_output(tmp_path):
+    p = tmp_path / 'changed-source.png'
+    info = PngInfo()
+    info.add_itxt(v.KEY, SVG.replace('red', 'blue'), zip=True)
+    with Image.open(io.BytesIO(v.render(SVG, 32, 24))) as image:
+        image.save(p, pnginfo=info)
+    replacement = tmp_path / 'replacement.svg'
+    replacement.write_text(SVG, encoding='utf-8')
+    output = tmp_path / 'keep.png'
+    output.write_bytes(b'keep')
+    with pytest.raises(SystemExit):
+        v.main(['update', str(p), str(replacement), str(output), '--force'])
+    assert output.read_bytes() == b'keep'

@@ -1,15 +1,16 @@
-"""PNG + bounded, compressed iTXt SVG. See README for the supported SVG subset."""
+"""Create, extract, update and inspect PNGs with compressed SVG and pixel verification."""
 from __future__ import annotations
 
 import argparse
 import hashlib
 import io
 import json
-import multiprocessing as mp
 import os
 from pathlib import Path
 import re
 import struct
+import subprocess
+import sys
 import tempfile
 import zlib
 
@@ -96,10 +97,13 @@ def _deny_fetch(*args, **kwargs):
     raise VectorPNGError("External SVG resources are disabled")
 
 
-def _render_worker(svg, width, height, pipe):
+def _render_worker(svg, width, height):
     try:
         # Windows Cairo DLL directory can be supplied without modifying global PATH.
         dll_dir = os.environ.get("VECTOR_PNG_CAIRO_DIR")
+        config = Path(__file__).resolve().parent.parent / 'cairo-path.txt'
+        if not dll_dir and os.name == 'nt' and config.is_file():
+            dll_dir = config.read_text(encoding='utf-8-sig').strip()
         handle = os.add_dll_directory(dll_dir) if os.name == "nt" and dll_dir else None
         if os.name == "nt" and dll_dir:
             # ctypes.find_library and CFFI's legacy loader also need PATH.
@@ -109,13 +113,11 @@ def _render_worker(svg, width, height, pipe):
         png = PNGSurface.convert(bytestring=svg.encode("utf-8"), unsafe=False,
                                  output_width=width, output_height=height,
                                  url_fetcher=_deny_fetch)
-        pipe.send((True, png))
         if handle:
             handle.close()
+        return png
     except Exception as exc:
-        pipe.send((False, f"{type(exc).__name__}: {exc}"))
-    finally:
-        pipe.close()
+        raise VectorPNGError(f"SVG renderer failed: {type(exc).__name__}: {exc}") from exc
 
 
 def render(svg, width, height, timeout=20):
@@ -124,26 +126,20 @@ def render(svg, width, height, timeout=20):
             or min(width, height) < 1 or max(width, height) > MAX_SIDE
             or width * height > MAX_PIXELS):
         raise VectorPNGError("Invalid dimensions (max side 4096; max 4 million pixels)")
-    ctx = mp.get_context("spawn")
-    receiver, sender = ctx.Pipe(duplex=False)
-    process = ctx.Process(target=_render_worker, args=(svg, width, height, sender))
-    process.start()
-    sender.close()
     try:
-        if not receiver.poll(timeout):
-            raise VectorPNGError("SVG rendering timed out")
-        try:
-            ok, result = receiver.recv()
-        except EOFError as exc:
-            raise VectorPNGError("SVG renderer exited unexpectedly") from exc
-        if not ok:
-            raise VectorPNGError(f"SVG renderer failed: {result}")
-        return result
-    finally:
-        receiver.close()
-        if process.is_alive():
-            process.terminate()
-        process.join()
+        result = subprocess.run(
+            [sys.executable, str(Path(__file__).resolve()), '--render-worker'],
+            input=json.dumps([svg, width, height]).encode('utf-8'),
+            capture_output=True, timeout=timeout,
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise VectorPNGError("SVG rendering timed out") from exc
+    if result.returncode:
+        raise VectorPNGError(result.stderr.decode('utf-8', errors='replace')[:2000])
+    if len(result.stdout) > MAX_PNG or not result.stdout.startswith(SIGNATURE):
+        raise VectorPNGError("SVG renderer returned invalid or excessive PNG")
+    return result.stdout
 
 
 def atomic_write(path, data, force=False):
@@ -171,7 +167,10 @@ def create(svg, output, width=512, height=512, force=False):
     with Image.open(io.BytesIO(png)) as image:
         result = io.BytesIO()
         image.save(result, format="PNG", pnginfo=info)
-    atomic_write(output, result.getvalue(), force)
+    data = result.getvalue()
+    if not _matches(svg, (width, height), data):
+        raise VectorPNGError("Saved PNG pixels do not match embedded SVG")
+    atomic_write(output, data, force)
 
 
 def _chunks(data):
@@ -201,7 +200,7 @@ def _chunks(data):
     raise VectorPNGError("Missing PNG IEND")
 
 
-def read(path):
+def _read_document(path):
     data = bounded_read(path, MAX_PNG)
     found = []
     chunks = list(_chunks(data))
@@ -241,15 +240,28 @@ def read(path):
             image.load()
     except Exception as exc:
         raise VectorPNGError("Invalid PNG raster or metadata") from exc
-    return found[0], (width, height)
+    return found[0], (width, height), data
+
+
+def _matches(svg, size, data):
+    rendered = render(svg, *size)
+    with Image.open(io.BytesIO(data)) as actual, Image.open(io.BytesIO(rendered)) as expected:
+        return actual.convert("RGBA").tobytes() == expected.convert("RGBA").tobytes()
+
+
+def read(path):
+    svg, size, data = _read_document(path)
+    if not _matches(svg, size, data):
+        raise VectorPNGError("PNG pixels do not match embedded SVG in this rendering environment")
+    return svg, size
 
 
 def inspect(path):
-    svg, (width, height) = read(path)
+    svg, (width, height), data = _read_document(path)
     return {"format": "vector-png/1", "keyword": KEY, "width": width, "height": height,
             "svg_bytes": len(svg.encode("utf-8")),
             "svg_sha256": hashlib.sha256(svg.encode("utf-8")).hexdigest(),
-            "raster_matches_svg": "not checked"}
+            "raster_matches_svg": _matches(svg, (width, height), data)}
 
 
 def main(argv=None):
@@ -264,7 +276,7 @@ def main(argv=None):
         p.add_argument("--width", type=int, default=None)
         p.add_argument("--height", type=int, default=None)
         p.add_argument("--force", action="store_true")
-    p = sub.add_parser("read", aliases=["extract"])
+    p = sub.add_parser("extract")
     p.add_argument("png", type=Path)
     p.add_argument("output", type=Path)
     p.add_argument("--force", action="store_true")
@@ -273,8 +285,11 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if args.command == "inspect":
-            print(json.dumps(inspect(args.png), ensure_ascii=False, indent=2))
-        elif args.command in {"read", "extract"}:
+            report = inspect(args.png)
+            print(json.dumps(report, ensure_ascii=False, indent=2))
+            if not report["raster_matches_svg"]:
+                parser.exit(2, "vector-png: PNG pixels do not match embedded SVG\n")
+        elif args.command == "extract":
             svg, _ = read(args.png)
             atomic_write(args.output, svg.encode("utf-8"), args.force)
         else:
@@ -287,5 +302,18 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    mp.freeze_support()
-    main()
+    if sys.argv[1:] == ['--render-worker']:
+        try:
+            payload = sys.stdin.buffer.read(MAX_SVG * 12 + 1000)
+            svg, width, height = json.loads(payload)
+            validate_svg(svg)
+            if (not isinstance(width, int) or not isinstance(height, int)
+                    or min(width, height) < 1 or max(width, height) > MAX_SIDE
+                    or width * height > MAX_PIXELS):
+                raise VectorPNGError('Invalid dimensions')
+            sys.stdout.buffer.write(_render_worker(svg, width, height))
+        except Exception as exc:
+            sys.stderr.buffer.write(str(exc).encode('utf-8', errors='replace'))
+            sys.exit(2)
+    else:
+        main()

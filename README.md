@@ -7,6 +7,11 @@ Python library, CLI, and a portable Codex skill. Original project code is MIT li
 
 Python 3.10+ and native Cairo are required. From this repository:
 
+For a user skill available across projects, follow **[INSTALL.md](INSTALL.md)**.
+On Windows run `./install-vector-png.ps1` from this repository. It refuses an
+existing destination, installs dependencies into a local environment, and runs
+a create/extract/update/inspect roundtrip check.
+
 ```sh
 python -m pip install -e ".[test]"
 ```
@@ -20,8 +25,8 @@ python -m pip install -e ".[test]"
   Use matching 64-bit Python and Cairo. This setting is used only by the render worker.
 
 No global skill installation is performed by this repository. To install the Codex
-skill, copy `skills/vector-png` into your Codex skills directory (normally
-`~/.codex/skills/vector-png`, or `%USERPROFILE%\.codex\skills\vector-png` on Windows).
+skill, copy `skills/vector-png` into `~/.agents/skills/vector-png/`
+(or `%USERPROFILE%\.agents\skills\vector-png` on Windows).
 Install the three Python dependencies into the Python environment used by Codex.
 The skill helper is self-contained and does not require this repository on PYTHONPATH.
 Invoke `$vector-png` in a new chat/session after installation.
@@ -31,15 +36,15 @@ Invoke `$vector-png` in a new chat/session after installation.
 ```sh
 python vector_png.py create examples/fireworks.svg fireworks.png --width 512 --height 512
 python vector_png.py inspect fireworks.png
-python vector_png.py read fireworks.png editable.svg
+python vector_png.py extract fireworks.png editable.svg
 # Edit editable.svg, then render and replace the embedded source together:
 python vector_png.py update fireworks.png editable.svg revised.png
 ```
 
-The installed `vector-png` command accepts the same arguments. `extract` aliases
-`read`. Outputs refuse to overwrite existing files unless `--force` is given.
+The installed `vector-png` command accepts the same four commands: create, extract,
+update, inspect. Outputs refuse to overwrite existing files unless `--force` is given.
 An in-place update requires `--force`. Invalid inputs leave the destination intact.
-Errors exit with status 2. Inspect prints JSON; read/extract writes exact UTF-8 SVG.
+Errors exit with status 2. Inspect prints JSON; extract writes exact UTF-8 SVG.
 Update uses the previous canvas dimensions unless `--width` / `--height` overrides
 them. Arbitrary PNG metadata is intentionally not carried into newly rendered files.
 Text and font appearance can vary across operating systems; convert text to paths
@@ -47,8 +52,7 @@ when identical visual output is needed. This is not a raster-to-vector converter
 
 Library API: `create(svg_text, output, width, height, force=False)`,
 `read(path) -> (svg_text, (width, height))`, and `inspect(path) -> dict`.
-Scripts using create/render must call them beneath `if __name__ == '__main__':`
-because rendering starts a spawn-process worker on every OS.
+Rendering runs in a separate subprocess with a 20-second timeout.
 
 ## Format v1
 
@@ -62,8 +66,11 @@ identifies this application convention, not a standardized PNG extension.
 
 Ordinary image viewers display the raster; they need no plugin. Editors, social
 sites and optimizers may strip metadata and thereby lose editability. There is no
-signature/authentication: inspect does **not** establish raster/source equivalence.
-An arbitrary valid PNG can contain a different SVG from the displayed pixels.
+signature/authentication. All four commands compare decoded RGBA pixels with a
+fresh SVG render. Extract/update reject mismatch; inspect reports boolean
+`raster_matches_svg` and exits 2 on mismatch. Create verifies before publishing.
+Font/Cairo differences across environments can cause a mismatch; prefer text
+converted to paths. This comparison does not authenticate a file's author.
 
 ## SVG safety and limits
 

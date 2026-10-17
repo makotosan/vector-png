@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>Editable fireworks</title>
+  <g fill="none" stroke-linecap="round">
+    <g stroke="#ffca63" stroke-width="6">
+      <path d="M256 112V40 M256 328v72 M148 220H76 M364 220h72 M180 144l-51-51 M332 296l51 51 M180 296l-51 51 M332 144l51-51"/>
+      <circle cx="256" cy="220" r="54" stroke-width="3"/>
+    </g>
+    <g stroke="#ff668b" stroke-width="4">
+      <path d="M256 150v-20 M256 290v20 M186 220h-20 M326 220h20 M207 171l-15-15 M305 269l15 15 M207 269l-15 15 M305 171l15-15"/>
+    </g>
+    <path d="M256 430q-20-20-5-45" stroke="#64cce0" stroke-width="4"/>
+  </g>
+  <g fill="#64cce0"><circle cx="90" cy="390" r="4"/><circle cx="408" cy="108" r="4"/><circle cx="410" cy="383" r="3"/></g>
+</svg>
