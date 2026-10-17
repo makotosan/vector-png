@@ -12,6 +12,14 @@ installation and fresh-session discovery steps. Updated CI also runs the complet
 Windows installer on its disposable runners and a roundtrip on every platform.
 The previous six-job success below applies to the preceding implementation.
 
+Updated verification: **all six CI jobs passed**, including the full Windows
+user-skill installation (copy, dedicated venv, dependency installation and CLI
+roundtrip) on Python 3.10 and 3.13. Tested implementation commit:
+`fe623995de3ee436f5fdfd5dfa2c9dd575206826`.
+[Successful installer workflow](https://github.com/makotosan/vector-png/actions/runs/39043808350).
+This verifies installation on disposable CI runners; the user's local installation
+and discovery in a new Codex session remain separate steps.
+
 Local Windows x64 / Python 3.13, 2026-10-17 (Asia/Tokyo).
 
 - **39 tests passed**, 3.72 seconds, using Pillow 13.0.0, CairoSVG 2.9.1,

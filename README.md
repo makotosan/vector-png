@@ -1,5 +1,7 @@
 # vector-png
 
+[日本語 README](README.ja.md)
+
 Create an ordinary, transparent PNG that also carries its editable SVG source.
 Python library, CLI, and a portable Codex skill. Original project code is MIT licensed.
 
@@ -24,7 +26,7 @@ python -m pip install -e ".[test]"
   `$env:VECTOR_PNG_CAIRO_DIR='C:\msys64\ucrt64\bin'` (adjust for your install).
   Use matching 64-bit Python and Cairo. This setting is used only by the render worker.
 
-No global skill installation is performed by this repository. To install the Codex
+Installing the Python package alone does not register the skill. To install the Codex
 skill, copy `skills/vector-png` into `~/.agents/skills/vector-png/`
 (or `%USERPROFILE%\.agents\skills\vector-png` on Windows).
 Install the three Python dependencies into the Python environment used by Codex.
