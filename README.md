@@ -1,9 +1,15 @@
-# vector-png
+# vector-png — Codex Skill
 
 [日本語 README](README.ja.md)
 
-Create an ordinary, transparent PNG that also carries its editable SVG source.
-Python library, CLI, and a portable Codex skill. Original project code is MIT licensed.
+**vector-png is a user skill for OpenAI Codex.** Install it in
+`~/.agents/skills/vector-png/` and invoke `$vector-png` in Codex to create,
+extract, edit, save, and inspect PNG files containing editable SVG source in
+compressed iTXt chunks. The skill is available across your projects.
+
+The bundled Python CLI and library power the skill and can also be used directly.
+They create ordinary, transparent PNGs that remain editable through their embedded
+SVG source. Original project code is MIT licensed.
 
 ## Installation
 
