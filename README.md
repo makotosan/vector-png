@@ -42,11 +42,11 @@ Invoke `$vector-png` in a new chat/session after installation.
 ## Usage
 
 ```sh
-python vector_png.py create examples/fireworks.svg fireworks.png --width 512 --height 512
-python vector_png.py inspect fireworks.png
-python vector_png.py extract fireworks.png editable.svg
+python vector_png.py create examples/fireworks.svg editable-art.png --width 512 --height 512
+python vector_png.py inspect editable-art.png
+python vector_png.py extract editable-art.png editable.svg
 # Edit editable.svg, then render and replace the embedded source together:
-python vector_png.py update fireworks.png editable.svg revised.png
+python vector_png.py update editable-art.png editable.svg revised.png
 ```
 
 The installed `vector-png` command accepts the same four commands: create, extract,
