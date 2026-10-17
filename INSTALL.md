@@ -1,13 +1,13 @@
-# Install vector-png as a user skill
+# Install vector-png as a Codex user skill
 
-[日本語インストール手順](INSTALL.ja.md)
+[日本語インストール手順](INSTALL.ja.md) · [English README](README.md)
 
-Destination: **`~/.agents/skills/vector-png/`**, discoverable across projects.
+Destination: **`~/.agents/skills/vector-png/`**, available across projects.
 Python 3.10+ and native Cairo are required. Existing skills are never overwritten.
 
 ## Windows (PowerShell)
 
-Run in a normal PowerShell session:
+Run these commands in a normal PowerShell session:
 
 ```powershell
 git clone https://github.com/makotosan/vector-png.git
@@ -15,30 +15,56 @@ Set-Location vector-png
 ./install-vector-png.ps1
 ```
 
-The installer copies `skills/vector-png` into your user skill directory, creates
-an isolated `.venv`, installs `requirements.txt`, and runs all four CLI commands
-in a roundtrip check. It does not change system-wide PATH. On failure it leaves
-the copied folder for diagnosis, and a retry refuses that existing folder.
-Move/rename an existing installation yourself before retrying.
+If you have already cloned the repository, update that checkout before running the script.
 
-Cairo is located from `VECTOR_PNG_CAIRO_DIR`, a standard MSYS2 UCRT64 installation,
-or an existing bundled Codex runtime. No Cairo DLL is downloaded or copied by
-this installer. You can specify an existing library directory:
+The installer performs these steps:
+
+1. Copy `skills/vector-png` into your user skill directory.
+2. Create a dedicated Python virtual environment, `.venv`, inside the skill.
+3. Install dependencies from `requirements.txt`.
+4. Run a roundtrip check using all four commands: create/extract/update/inspect.
+
+It does not change system-wide PATH. On failure it leaves the copied folder for
+diagnosis. A retry refuses that existing folder; inspect it and, if needed, move
+or rename it before retrying.
+
+### Prepare Cairo
+
+The installer searches `VECTOR_PNG_CAIRO_DIR`, a standard MSYS2 UCRT64 installation,
+or an existing bundled Codex runtime. It does not download or copy Cairo DLLs.
+You can specify an existing library directory:
 
 ```powershell
 ./install-vector-png.ps1 -CairoDirectory 'C:\msys64\ucrt64\bin'
 ```
 
-To obtain Cairo, install [MSYS2](https://www.msys2.org/) and run
-`pacman -S mingw-w64-ucrt-x86_64-cairo` in its terminal. Match 64-bit Python and
-Cairo. The installer records the directory in `cairo-path.txt` for the worker.
-It does not change PowerShell execution policy; follow your organization's
-approved process if scripts are blocked.
+If Cairo is not installed, install [MSYS2](https://www.msys2.org/) and run the
+following in its terminal:
+
+```sh
+pacman -S mingw-w64-ucrt-x86_64-cairo
+```
+
+Match the Python and Cairo architectures, for example 64-bit with 64-bit.
+The selected directory is recorded in the skill's `cairo-path.txt` and used by
+the render worker. The script does not change PowerShell execution policy.
+If your organization restricts scripts, follow its approved process.
 
 ## macOS / Linux
 
-Install Cairo (`brew install cairo` on macOS, or
-`sudo apt-get install libcairo2` on Debian/Ubuntu), clone this repository, then:
+Install Cairo first:
+
+- macOS: `brew install cairo`.
+- Debian/Ubuntu: `sudo apt-get install libcairo2`.
+
+Clone the repository and enter its root directory:
+
+```sh
+git clone https://github.com/makotosan/vector-png.git
+cd vector-png
+```
+
+Run the copy step below. It stops if the destination already exists.
 
 ```sh
 python - <<'PY'
@@ -51,31 +77,51 @@ target.parent.mkdir(parents=True, exist_ok=True)
 shutil.copytree('skills/vector-png', target)
 print(target)
 PY
+```
+
+**Confirm that copying succeeded before** creating the virtual environment and
+installing dependencies. If any step fails, do not execute subsequent commands.
+
+```sh
 python -m venv "$HOME/.agents/skills/vector-png/.venv"
 "$HOME/.agents/skills/vector-png/.venv/bin/python" -m pip install -r "$HOME/.agents/skills/vector-png/requirements.txt"
 "$HOME/.agents/skills/vector-png/.venv/bin/python" "$HOME/.agents/skills/vector-png/scripts/roundtrip_check.py" --output-dir "$(mktemp -d)"
 ```
 
-Run from the repository root. Use `python3` instead of `python` where required.
-Stop if copying or dependency installation fails; do not continue with a refused
-destination. If macOS cannot find Cairo, export
-`DYLD_FALLBACK_LIBRARY_PATH="$(brew --prefix)/lib"` before invoking Python.
+Use `python3` instead of `python` where required. If macOS cannot locate Cairo,
+set this before running Python:
 
-## Verify discovery and use
+```sh
+export DYLD_FALLBACK_LIBRARY_PATH="$(brew --prefix)/lib"
+```
 
-1. Confirm that the roundtrip check reports success. It verifies generation,
-   exact SVG extraction, editing, resaving and pixel/source comparison.
-2. Invoke `$vector-png` in Codex. Existing chats can use it once the skill is
-   recognized. If it does not appear, restart Codex and reopen the chat.
-3. Ask it to create and inspect a PNG. Expected JSON: `"raster_matches_svg": true`.
+## Verify installation and use in Codex
 
-The skill instructs Codex to use its local `.venv`. The helper also works from
-any project using its absolute path. Syntax checks and CLI tests do not prove
-that an already-open Codex session has refreshed its skill discovery.
+1. Confirm the roundtrip output contains `"roundtrip": "passed"`. It checks PNG
+   creation, extraction of exactly matching SVG bytes, editing, resaving and
+   raster/source consistency.
+2. Invoke `$vector-png` in Codex. Existing chats can use the skill once recognized.
+   If it does not appear, restart Codex and reopen the chat.
+3. Ask it to create a PNG from a simple SVG and inspect it.
+   Successful JSON includes `"raster_matches_svg": true`.
 
-## Tests
+The skill instructs Codex to use its dedicated `.venv` when present.
+The helper also runs from any project when addressed by its absolute path.
+Verify CLI operation and Codex skill discovery separately.
 
-From the repository: `python -m pip install -e ".[test]"`, then
-`python -m pytest -q`. From an installed skill, run its `.venv` Python with
-`-m pytest -q` in the skill directory. `VECTOR_PNG_TEST_TMP_ROOT` optionally
-places test artifacts in a writable workspace folder.
+## Automated tests
+
+From the development repository root:
+
+```sh
+python -m pip install -e ".[test]"
+python -m pytest -q
+```
+
+For an installed skill, enter the skill directory and use that skill's `.venv`
+Python to run `-m pytest -q`.
+
+`VECTOR_PNG_TEST_TMP_ROOT` optionally places test artifacts in a writable
+workspace directory.
+
+[Return to the Japanese installation guide](INSTALL.ja.md)
