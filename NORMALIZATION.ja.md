@@ -24,6 +24,9 @@ Chromium には別の第三者ライセンス表記があります。ブラウ�
 Playwright が取得し、このリポジトリや Python wheel には同梱しません。
 レンダラーの更新は意図的にレビュー・テストしてください。バージョンはレポートに記録します。
 PNG 変換と既存コマンドには、引き続き Cairo／Pillow が必要です。
+Chromium のサンドボックスを要求し、ホストが起動を拒否する場合はエラーを返します。
+--no-sandbox へのフォールバックはありません。Linux の AppArmor・ユーザー名前空間の設定は
+INSTALL.ja.md と [Ubuntu の案内](https://documentation.ubuntu.com/release-notes/24.04/)を参照してください。
 単独スキルでは、その requirements-normalization.txt と専用の Python を使います。
 Windows インストーラーは `-WithNormalization` に対応します。INSTALL.ja.md を参照してください。
 

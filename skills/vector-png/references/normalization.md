@@ -12,6 +12,9 @@ Playwright is pinned to 1.64.0. Use the same PLAYWRIGHT_BROWSERS_PATH setting
 at browser installation and invocation if a custom cache is configured.
 Linux may need `python -m playwright install --with-deps chromium` with appropriate
 OS installation permissions. Native Cairo remains required for PNG output.
+The browser sandbox must be allowed by the host. If Linux AppArmor blocks user
+namespaces, follow the host's approved configuration process; do not add a
+--no-sandbox fallback or describe a failed launch as verified conversion.
 
 ```sh
 python scripts/vector_png.py normalize input.svg normalized.svg --report normalize-report.json

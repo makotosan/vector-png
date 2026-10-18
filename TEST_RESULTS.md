@@ -122,3 +122,16 @@ to create a separate new file. New CI results must be checked independently.
   Windows/macOS/Linux × Python 3.10/3.13, tests the Windows installer with
   -WithNormalization and checks all three helper copies. Current remote results
   must be read from GitHub Actions; configuration alone is not a pass.
+
+### First normalization CI run and Linux environment adjustment
+
+[Run 39177034854](https://github.com/makotosan/vector-png/actions/runs/39177034854)
+passed both Windows and macOS Python versions, including real rendering, builds,
+standalone conversion and the Windows installer. The pinned-specification job
+also passed. Linux's four actual browser tests failed at Chromium sandbox startup;
+the remaining 115 tests passed. This was not hidden with skips or --no-sandbox.
+CI now loads an AppArmor userns profile attached to the exact downloaded
+headless Chromium binary, retaining AppArmor's system-wide restriction and the
+application's requested browser sandbox. Setup and the requirement for an approved
+host policy are documented in both languages. Consult the subsequent run for
+the adjustment's actual outcome.

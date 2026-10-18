@@ -123,6 +123,13 @@ the same setting when installing and invoking the skill. Without the optional
 dependencies/browser, the four existing commands still work, while normalization
 fails safely. See [NORMALIZATION.md](NORMALIZATION.md) for scope and reports.
 
+The normalizer requests Chromium's sandbox and never retries with --no-sandbox.
+On Linux, host policy must permit the browser's sandbox/user namespaces. If
+AppArmor blocks it, configure an approved profile for the installed binary;
+see [Ubuntu's user-namespace guidance](https://documentation.ubuntu.com/release-notes/24.04/).
+CI permits userns for its exact downloaded Chromium binary using a dedicated
+AppArmor profile, without disabling AppArmor or its system-wide restriction.
+
 ## Verify installation and use in Codex
 
 1. Confirm the roundtrip output contains `"roundtrip": "passed"`. It checks PNG

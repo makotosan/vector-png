@@ -24,6 +24,9 @@ The optional dependencies are tinycss2 (BSD-3-Clause) and Playwright 1.64.0
 downloaded by Playwright, not included in this repository or Python wheel.
 Review and test renderer updates deliberately; versions are recorded in reports.
 Cairo/Pillow remain necessary for PNG conversion and the existing commands.
+Chromium's sandbox is requested; a host that blocks its startup returns an error,
+with no --no-sandbox fallback. Linux AppArmor/user-namespace setup is described
+in INSTALL.md and [Ubuntu's guidance](https://documentation.ubuntu.com/release-notes/24.04/).
 For a standalone skill use its requirements-normalization.txt and its own Python;
 the Windows installer supports `-WithNormalization`. See INSTALL.md.
 

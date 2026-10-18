@@ -122,6 +122,13 @@ PLAYWRIGHT_BROWSERS_PATH でブラウザーのキャッシュ配置先を指定�
 同じ設定を使います。任意の依存先・ブラウザーがなくても、既存の 4 コマンドは動作し、
 正規化は安全に失敗します。対応範囲とレポートは [NORMALIZATION.ja.md](NORMALIZATION.ja.md) を参照してください。
 
+正規化は Chromium のサンドボックスを要求し、--no-sandbox での再試行は行いません。
+Linux では、ブラウザーのサンドボックス・ユーザー名前空間をホストの方針が許可する必要があります。
+AppArmor が拒否する場合は、導入した実行ファイル用の承認されたプロファイルを設定してください。
+[Ubuntu のユーザー名前空間の案内](https://documentation.ubuntu.com/release-notes/24.04/)を参照してください。
+CI は専用の AppArmor プロファイルで、取得した正確な Chromium の実行ファイルに userns を許可し、
+AppArmor やシステム全体の制限は無効にしません。
+
 ## 導入結果と Codex での利用確認
 
 1. 往復テストの出力が `"roundtrip": "passed"` になっていることを確認します。

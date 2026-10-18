@@ -43,6 +43,25 @@ jobs:
       - run: python -m pip install -e ".[test,normalize]" build
       - name: Install controlled SVG2 renderer
         run: python -m playwright install --with-deps chromium
+      - name: Permit sandbox user namespaces for this CI Chromium binary
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          binaries = list((Path.home() / '.cache/ms-playwright').glob(
+              'chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell'))
+          assert len(binaries) == 1, binaries
+          binary = str(binaries[0].resolve())
+          profile = ('abi <abi/4.0>,\ninclude <tunables/global>\n'
+                     'profile vector-png-ci-chromium "' + binary + '" flags=(unconfined) {\n'
+                     '  userns,\n}\n')
+          target = '/etc/apparmor.d/vector-png-ci-chromium'
+          subprocess.run(['sudo', 'tee', target], input=profile, text=True,
+                         stdout=subprocess.DEVNULL, check=True)
+          subprocess.run(['sudo', 'apparmor_parser', '-r', target], check=True)
+          PY
       - name: Verify standalone skill matches package
         run: python -c "from pathlib import Path; names=['vector_png.py','vector_png_css.py','vector_png_normalize.py']; assert all(Path(n).read_bytes() == (Path('skills/vector-png/scripts') / n).read_bytes() for n in names)"
       - run: python -m pytest -q
