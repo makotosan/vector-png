@@ -8,8 +8,8 @@ Development targets [vector-png-spec at `8238ebdaa136f448affa53133b99ee5afde5765
 wire v1 / draft 0.1, as recorded in [spec-reference.json](spec-reference.json).
 English SPEC.md is normative; SPEC.ja.md is a full informative translation.
 The shared source keyword is `vector-png.svg` in compressed iTXt.
-This record establishes the reference for future development; it does not upgrade
-runtime behavior or declare complete conformance.
+This record tracks the development reference, tested scope and outstanding audits;
+it does not declare complete conformance.
 
 ## Verification and outstanding audit
 
@@ -56,6 +56,7 @@ verify the upstream transformation or before/after appearance. Upstream
 normalization structural/catalog tests run separately in specification-reference
 CI with tinycss2; they do not certify this CLI as a normalizer.
 No production dependency, output vocabulary or extraction behavior changes.
+The renderer's local text policy changes as documented below.
 The outstanding audits above remain open.
 
 ## Updating this record
@@ -67,3 +68,10 @@ Existing implementation test results remain recorded in [TEST_RESULTS.md](TEST_R
 The specification-reference CI job checks upstream fixture consistency only;
 implementation tests and preview verification are separate evidence.
 Follow [CONTRIBUTING.md](CONTRIBUTING.md) when changing the pin or behavior.
+
+Text rendering uses grayscale antialiasing with hint style and hint metrics
+disabled inside each worker, avoiding display-dependent LCD color fringes.
+Font selection remains host-dependent; this is not cross-OS pixel equivalence.
+Older PNGs rendered with the previous system-default text policy may fail exact
+verification. Keep the original and recreate from a trusted SVG into a new file;
+do not bypass mismatch rejection or automatically rewrite the original.

@@ -109,7 +109,13 @@ def _render_worker(svg, width, height):
             # ctypes.find_library and CFFI's legacy loader also need PATH.
             # This changes only the disposable worker's environment.
             os.environ["PATH"] = dll_dir + os.pathsep + os.environ.get("PATH", "")
+        from cairosvg import surface as cairo_surface
         from cairosvg.surface import PNGSurface
+        # PNG pixels must not depend on a display's LCD subpixel configuration.
+        # This worker owns these module dictionaries; no caller process is changed.
+        cairo_surface.TEXT_ANTIALIAS[None] = cairo_surface.cairo.ANTIALIAS_GRAY
+        cairo_surface.TEXT_HINT_STYLE[None] = cairo_surface.cairo.HINT_STYLE_NONE
+        cairo_surface.TEXT_HINT_METRICS[None] = cairo_surface.cairo.HINT_METRICS_OFF
         png = PNGSurface.convert(bytestring=svg.encode("utf-8"), unsafe=False,
                                  output_width=width, output_height=height,
                                  url_fetcher=_deny_fetch)

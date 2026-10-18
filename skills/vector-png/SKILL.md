@@ -37,3 +37,10 @@ assets; never claim this comparison authenticates the author or original file.
 Other PNG metadata is not retained when updating. The helper enforces source,
 image and XML complexity limits and a 20-second render timeout; the worker is
 not an OS security sandbox. Show the final PNG and report its path and validation.
+
+Text rendering uses grayscale antialiasing with hint style and hint metrics
+disabled inside each worker, avoiding display-dependent LCD color fringes.
+Font selection remains host-dependent; this is not cross-OS pixel equivalence.
+Older PNGs rendered with the previous system-default text policy may fail exact
+verification. Keep the original and recreate from a trusted SVG into a new file;
+do not bypass mismatch rejection or automatically rewrite the original.

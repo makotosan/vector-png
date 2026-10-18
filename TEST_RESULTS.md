@@ -58,7 +58,7 @@ No global Codex installation or machine-wide Python modification was performed.
 - Reviewed specification commit `8238ebdaa136f448affa53133b99ee5afde5765a`,
   including SPEC section 5, IMPLEMENTATIONS and svg-normalization-v1 sections 1–8.
 - Wire v1 and safe-svg-v1 are unchanged. Optional normalization remains unimplemented;
-  no runtime behavior or production dependency changes are made.
+  production dependencies are unchanged. The local text policy is updated below.
 - Local Python 3.13 implementation suite: **43 passed** (41 existing + 2 regressions).
   The pytest cache warning is an execution-environment permission issue, not a test failure.
 - Pinned upstream structural suite: **10 passed** with tinycss2 installed.
@@ -72,3 +72,15 @@ No global Codex installation or machine-wide Python modification was performed.
   section by section for equivalent requirements, status, links and limitations.
 - Linux/macOS/Windows validation is configured in GitHub Actions; consult the
   workflow for this commit's actual outcome rather than treating configuration as a pass.
+
+### Windows regression investigation
+
+The new nameplate test exposed a real strict-comparison failure on both Windows
+Python versions in [run 39152251592](https://github.com/makotosan/vector-png/actions/runs/39152251592).
+Diagnostics in run 39152481159 confirmed identical embedded source bytes and
+differences confined to the bold text area (53,50)-(230,70), with LCD color fringes.
+The worker now explicitly selects grayscale antialiasing, no hint style and no
+hint metrics. The regression also requires the black text region to remain
+monochrome. Comparison is still exact; no tolerance or Windows skip is added.
+Previously rendered text PNGs may mismatch; keep originals and use trusted SVG
+to create a separate new file. New CI results must be checked independently.

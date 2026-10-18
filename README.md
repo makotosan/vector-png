@@ -208,3 +208,10 @@ The reviewed baseline includes the optional SVG Normalization Profile v1.
 This CLI does not implement it: CSS/class/marker/ARIA input remains unsupported,
 and there are no `normalize` or `convert` commands. Existing wire v1 files need
 no migration. See [compatibility details](SPEC_COMPATIBILITY.md).
+
+Text rendering uses grayscale antialiasing with hint style and hint metrics
+disabled inside each worker, avoiding display-dependent LCD color fringes.
+Font selection remains host-dependent; this is not cross-OS pixel equivalence.
+Older PNGs rendered with the previous system-default text policy may fail exact
+verification. Keep the original and recreate from a trusted SVG into a new file;
+do not bypass mismatch rejection or automatically rewrite the original.

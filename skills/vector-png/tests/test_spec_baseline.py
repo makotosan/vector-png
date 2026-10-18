@@ -29,23 +29,12 @@ def test_normalized_golden_source_roundtrip(tmp_path):
     data = (FIXTURES / "normalization-safe.svg").read_bytes()
     png = tmp_path / "nameplate.png"
     v.create(data.decode("utf-8"), png, 660, 240)
-    embedded, dimensions, encoded = v._read_document(png)
-    assert embedded.encode("utf-8") == data
-    try:
-        svg, dimensions = v.read(png)
-    except v.VectorPNGError:
-        import io
-        from PIL import Image, ImageChops
-        actual = Image.open(io.BytesIO(encoded)).convert("RGBA")
-        diagnostics = []
-        for _ in range(3):
-            fresh = Image.open(io.BytesIO(v.render(embedded, *dimensions))).convert("RGBA")
-            delta = ImageChops.difference(actual, fresh).convert("RGB")
-            diagnostics.append({"bounds": delta.getbbox(),
-                                "first": [(x, y, actual.getpixel((x, y)), fresh.getpixel((x, y)))
-                                          for y in range(240) for x in range(660)
-                                          if actual.getpixel((x, y)) != fresh.getpixel((x, y))][:5]})
-        pytest.fail("Same-source render diagnostics: " + repr(diagnostics))
+    # A monochrome label must not acquire display-dependent LCD color fringes.
+    from PIL import Image
+    with Image.open(png) as image:
+        label = image.convert("RGB").crop((30, 40, 400, 120))
+        assert all(red == green == blue for red, green, blue in label.getdata())
+    svg, dimensions = v.read(png)
     assert svg.encode("utf-8") == data
     assert dimensions == (660, 240)
     assert v.inspect(png)["raster_matches_svg"] is True
