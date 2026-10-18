@@ -6,17 +6,18 @@
 
 The file-format authority is [vector-png-spec](https://github.com/makotosan/vector-png-spec).
 [spec-reference.json](spec-reference.json) pins the development baseline to
-commit `491ba1783ca0819fa557aa34f9a4d89365f1e465` (wire v1, draft 0.1).
+commit `8238ebdaa136f448affa53133b99ee5afde5765a` (wire v1, draft 0.1).
 This is a source-repository reference, not a new field embedded in PNG files.
 The pin does not assert complete implementation conformance.
 
 At that revision, read:
 
-- [SPEC.md](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/SPEC.md): normative English requirements.
-- [SPEC.ja.md](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/SPEC.ja.md): full informative Japanese translation.
-- [safe-svg-v1](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/profiles/safe-svg-v1.md): restricted SVG processing profile.
-- [IMPLEMENTATIONS.md](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/IMPLEMENTATIONS.md): implementation and migration guidance.
-- [Fixture catalog](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/fixtures/README.md): fixture usage and limitations.
+- [SPEC.md](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/SPEC.md): normative English requirements.
+- [SPEC.ja.md](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/SPEC.ja.md): full informative Japanese translation.
+- [safe-svg-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/safe-svg-v1.md): restricted SVG processing profile.
+- [IMPLEMENTATIONS.md](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/IMPLEMENTATIONS.md): implementation and migration guidance.
+- [Fixture catalog](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/fixtures/README.md): fixture usage and limitations.
+- [svg-normalization-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/svg-normalization-v1.md): optional input-processing profile; not implemented by this CLI.
 
 ## Before changing behavior
 

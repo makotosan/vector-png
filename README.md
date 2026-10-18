@@ -203,3 +203,8 @@ Track remaining audits and local policies in
 job checks pinned upstream fixture consistency; it does not certify this CLI's
 conformance. Updating the baseline requires reviewing upstream changes and updating
 the pin, compatibility record, relevant tests and bilingual documentation together.
+
+The reviewed baseline includes the optional SVG Normalization Profile v1.
+This CLI does not implement it: CSS/class/marker/ARIA input remains unsupported,
+and there are no `normalize` or `convert` commands. Existing wire v1 files need
+no migration. See [compatibility details](SPEC_COMPATIBILITY.md).

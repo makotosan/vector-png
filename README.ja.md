@@ -207,3 +207,8 @@ CairoSVG（LGPL-3.0-or-later）や Pillow（MIT-CMU）などの依存先のラ�
 仕様参照の CI ジョブは、固定した上流のテストデータの整合性を検査するものであり、
 この CLI の準拠を認証するものではありません。参照基準の更新では上流の変更をレビューし、
 参照設定、互換性の記録、関連テスト、日英ドキュメントを同時に更新する必要があります。
+
+レビュー済みの基準には、任意の SVG Normalization Profile v1 が含まれます。
+この CLI はそのプロファイルに未対応です。CSS・class・marker・ARIA を含む入力は引き続き未対応で、
+`normalize` と `convert` コマンドはありません。既存の wire v1 ファイルの移行は不要です。
+詳細は[互換性の記録](SPEC_COMPATIBILITY.ja.md)を参照してください。

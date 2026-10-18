@@ -6,17 +6,18 @@
 
 ファイル形式の正規仕様は [vector-png-spec](https://github.com/makotosan/vector-png-spec) です。
 [spec-reference.json](spec-reference.json) で開発基準を
-コミット `491ba1783ca0819fa557aa34f9a4d89365f1e465`（wire v1、draft 0.1）に固定します。
+コミット `8238ebdaa136f448affa53133b99ee5afde5765a`（wire v1、draft 0.1）に固定します。
 これはソースリポジトリの参照設定であり、PNG に埋め込む新たなフィールドではありません。
 参照の固定は、実装の完全準拠を主張するものではありません。
 
 そのリビジョンの次の文書を読んでください。
 
-- [SPEC.md](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/SPEC.md)：英語の規範的要件。
-- [SPEC.ja.md](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/SPEC.ja.md)：全文の日本語参考訳。
-- [safe-svg-v1](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/profiles/safe-svg-v1.md)：制限付き SVG 処理プロファイル。
-- [IMPLEMENTATIONS.md](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/IMPLEMENTATIONS.md)：実装と移行の注意事項。
-- [テストデータ一覧](https://github.com/makotosan/vector-png-spec/blob/491ba1783ca0819fa557aa34f9a4d89365f1e465/fixtures/README.md)：利用方法と制限。
+- [SPEC.md](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/SPEC.md)：英語の規範的要件。
+- [SPEC.ja.md](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/SPEC.ja.md)：全文の日本語参考訳。
+- [safe-svg-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/safe-svg-v1.md)：制限付き SVG 処理プロファイル。
+- [IMPLEMENTATIONS.md](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/IMPLEMENTATIONS.md)：実装と移行の注意事項。
+- [テストデータ一覧](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/fixtures/README.md)：利用方法と制限。
+- [svg-normalization-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/svg-normalization-v1.md): 任意の入力処理プロファイルです。この CLI には未実装です。
 
 ## 振る舞いを変更する前に
 

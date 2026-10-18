@@ -52,3 +52,23 @@ and the standalone skill smoke test. Tested implementation commit:
 [Successful workflow run](https://github.com/makotosan/vector-png/actions/runs/39043089032).
 The optional skill is packaged in the source archive/repository, not in the CLI wheel.
 No global Codex installation or machine-wide Python modification was performed.
+
+## Specification baseline review (2026-10-19)
+
+- Reviewed specification commit `8238ebdaa136f448affa53133b99ee5afde5765a`,
+  including SPEC section 5, IMPLEMENTATIONS and svg-normalization-v1 sections 1–8.
+- Wire v1 and safe-svg-v1 are unchanged. Optional normalization remains unimplemented;
+  no runtime behavior or production dependency changes are made.
+- Local Python 3.13 implementation suite: **43 passed** (41 existing + 2 regressions).
+  The pytest cache warning is an execution-environment permission issue, not a test failure.
+- Pinned upstream structural suite: **10 passed** with tinycss2 installed.
+  Both original and normalization catalog reproducibility checks passed.
+  Temporary-directory permissions initially blocked an upstream transaction test;
+  rerunning with approved normal permissions passed.
+- The new nameplate tests cover early CSS rejection/output protection and the
+  safe golden SVG's PNG roundtrip, exact extraction and CairoSVG raster verification.
+  They do not establish normalization or before/after SVG2 appearance equivalence.
+- README, CONTRIBUTING and SPEC_COMPATIBILITY English/Japanese pairs were reviewed
+  section by section for equivalent requirements, status, links and limitations.
+- Linux/macOS/Windows validation is configured in GitHub Actions; consult the
+  workflow for this commit's actual outcome rather than treating configuration as a pass.

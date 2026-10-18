@@ -1,0 +1,2 @@
+tests/fixtures/*.svg text eol=lf
+skills/vector-png/tests/fixtures/*.svg text eol=lf

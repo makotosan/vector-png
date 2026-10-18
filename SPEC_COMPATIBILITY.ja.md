@@ -4,7 +4,7 @@
 
 ## 基準と状態
 
-開発は [vector-png-spec の `491ba1783ca0819fa557aa34f9a4d89365f1e465`](https://github.com/makotosan/vector-png-spec/tree/491ba1783ca0819fa557aa34f9a4d89365f1e465)、
+開発は [vector-png-spec の `8238ebdaa136f448affa53133b99ee5afde5765a`](https://github.com/makotosan/vector-png-spec/tree/8238ebdaa136f448affa53133b99ee5afde5765a)、
 wire v1／draft 0.1 を基準とし、[spec-reference.json](spec-reference.json) に記録します。
 英語の SPEC.md を正規仕様、SPEC.ja.md を全文の参考訳とします。
 共通のソースキーワードは圧縮 iTXt の `vector-png.svg` です。
@@ -32,6 +32,28 @@ wire v1／draft 0.1 を基準とし、[spec-reference.json](spec-reference.json)
 それらを拒否できます。コンテナーの正常系データすべてを製品でのインポート成功と
 みなさないでください。データのチェッカーは小さなラスター形式の範囲を扱うもので、
 完全な PNG デコーダー、セキュリティ用の無害化処理、認証用テスト一式ではありません。
+
+## レビューした仕様更新：2026-10-19
+
+基準を `491ba1783ca0819fa557aa34f9a4d89365f1e465` から `8238ebdaa136f448affa53133b99ee5afde5765a` へ更新します。
+SPEC 第 5 節と IMPLEMENTATIONS に、任意の
+[SVG Normalization Profile v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/svg-normalization-v1.md)
+が追加されました。wire v1、`vector-png.svg`、safe-svg-v1、
+既存のコンテナーの 21 ケースは変更されていません。既存ファイルの移行は不要です。
+
+正規化プロファイルの第 2–7 節は、検証・トークン化した CSS、カスケードと継承、
+制限付き矢印の展開、アクセシビリティ情報の移行、管理した SVG2 レンダラーによる変換前後の
+描画検証、独立したレポート、既存出力を保護する一括公開を要求します。
+本実装は、この任意プロファイルに**未対応**です。`normalize` と `convert` コマンドはありません。
+既存の 4 コマンドは、CSS、class、marker、ARIA メタデータを削除せず、引き続き拒否します。
+すでに安全な SVG に対する CairoSVG の画素検査は、SVG2 正規化の同等性の証明にはなりません。
+
+回帰テストには、固定した仕様の合成名札の入力と正規化後の期待 SVG を使用します。
+描画・公開前の拒否、安全な出力の受け入れ、PNG からのバイトを保持した抽出、
+ソースと画像の照合を検査します。上流の変換処理や変換前後の見た目を検証するものではありません。
+上流の正規化の構造・データ整合性テストは、tinycss2 を使う仕様参照 CI で別に実行します。
+これらは、本 CLI を正規化ツールとして認証するものではありません。
+製品の依存関係、出力の許可要素、抽出動作は変更しません。前述の未監査事項は残ります。
 
 ## この記録の更新
 

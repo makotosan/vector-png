@@ -1,11 +1,14 @@
 {
   "repository": "makotosan/vector-png-spec",
-  "revision": "491ba1783ca0819fa557aa34f9a4d89365f1e465",
+  "revision": "8238ebdaa136f448affa53133b99ee5afde5765a",
   "wire_format": "wire v1",
   "document_version": "draft 0.1",
   "normative_document": "SPEC.md",
   "informative_translation": "SPEC.ja.md",
   "security_profile": "profiles/safe-svg-v1.md",
   "implementation_guidance": "IMPLEMENTATIONS.md",
-  "fixtures": "fixtures/vectors.json"
+  "fixtures": "fixtures/vectors.json",
+  "optional_input_profile": "profiles/svg-normalization-v1.md",
+  "optional_input_profile_support": "not-implemented",
+  "normalization_fixtures": "fixtures/normalization/cases.json"
 }
