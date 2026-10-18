@@ -9,6 +9,6 @@
   "implementation_guidance": "IMPLEMENTATIONS.md",
   "fixtures": "fixtures/vectors.json",
   "optional_input_profile": "profiles/svg-normalization-v1.md",
-  "optional_input_profile_support": "not-implemented",
+  "optional_input_profile_support": "experimental-implemented",
   "normalization_fixtures": "fixtures/normalization/cases.json"
 }

@@ -29,5 +29,6 @@ PNG metadata, limits and raster/source tampering. Input SVG is stored as UTF-8
 under the keyword `vector-png.svg`, iTXt flag 1/method 0 (zlib).
 
 The source SVG limit is 1 MB; PNG limit 32 MB; maximum side 4096 and total pixels
-4 million. SVG limits: 5000 elements and depth 32. CSS, external resources and
-scripts are rejected, and the renderer also has a deny-all resource fetcher.
+4 million. SVG limits: 5000 elements and depth 32. The original four commands reject CSS; the optional explicit import path is
+described in normalization.md. External resources and scripts are always rejected, and the renderer also has a deny-all resource fetcher.
+

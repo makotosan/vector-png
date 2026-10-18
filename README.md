@@ -80,7 +80,8 @@ python vector_png.py update editable-art.png editable.svg revised.png
 python vector_png.py inspect revised.png
 ```
 
-The installed `vector-png` command accepts the same four commands.
+The installed `vector-png` command accepts these four commands plus the optional
+`normalize` / `convert` import commands below.
 The standalone skill contains `scripts/vector_png.py`.
 
 | Command | Behavior |
@@ -89,8 +90,12 @@ The standalone skill contains `scripts/vector_png.py`.
 | `extract` | Verify PNG/SVG consistency and extract the SVG |
 | `update` | Update the raster and embedded source together from edited SVG |
 | `inspect` | Inspect metadata and raster/source consistency and print JSON |
+| `normalize` | Explicitly normalize restricted CSS-styled SVG and save a verified SVG/report pair |
+| `convert` | Normalize and verify restricted CSS-styled SVG, then save PNG/report together |
 
-Outputs refuse to overwrite existing files unless `--force` is given.
+The existing create/extract/update commands refuse to overwrite existing files
+unless `--force` is given. Normalize/convert always refuse existing outputs and
+require distinct input/output/report paths; they have no --force option.
 An in-place update also requires `--force`. Invalid inputs leave the destination
 intact. Errors exit with status 2. Inspect prints JSON; extract writes exact UTF-8
 SVG. Update uses the previous canvas dimensions unless `--width` / `--height`
@@ -103,20 +108,39 @@ Library API: `create(svg_text, output, width, height, force=False)`,
 `read(path) -> (svg_text, (width, height))`, and `inspect(path) -> dict`.
 Rendering runs in a separate subprocess with a 20-second timeout.
 
+## Optional CSS normalization
+
+Install the optional dependencies and Chromium before using the two import commands:
+
+```sh
+python -m pip install -e ".[normalize]"
+python -m playwright install chromium
+python vector_png.py normalize examples/css-diagram.svg normalized.svg --report normalize-report.json
+python vector_png.py convert examples/css-diagram.svg diagram.png --report convert-report.json
+```
+
+Both preserve the original, resolve restricted CSS, migrate metadata, expand
+restricted triangle arrows and require exact before/after Chromium RGBA equality.
+Only the normalized safe SVG is embedded by convert, whose PNG is separately
+verified with CairoSVG. Full behavior, limits, reports, setup and compatibility
+are documented in [NORMALIZATION.md](NORMALIZATION.md). The Windows installer
+accepts `-WithNormalization`; existing installed skills are never overwritten.
+
 ## Format v1 and consistency
 
 The PNG is a single-frame standard PNG. Exactly one `iTXt` chunk uses the Latin-1
 keyword `vector-png.svg`, compression flag 1, compression method 0 (zlib), empty
 language/translated-keyword fields, and UTF-8 SVG text. The writer uses Pillow
 `PngInfo.add_itxt(..., zip=True)` and preserves the accepted source text instead
-of reserializing XML. Readers accept valid non-empty language fields.
+of reserializing XML. Explicit normalize/convert first serialize the transformed
+SVG; extraction then preserves those normalized bytes, not the original CSS. Readers accept valid non-empty language fields.
 No custom critical chunk or base64 is used. The `vector-png/1` name in inspect
 JSON identifies this application convention, not a standardized PNG extension.
 It is not interoperable with draw.io's embedded diagram XML.
 
 Ordinary image viewers display the raster without a plugin. Editors, social
 sites and optimizers may strip metadata and lose SVG editability.
-There is no signature/authentication. All four commands compare decoded RGBA
+There is no signature/authentication. The original four commands compare decoded RGBA
 pixels with a fresh render of the embedded SVG at the same dimensions.
 Extract/update reject mismatch; inspect reports boolean `raster_matches_svg`
 and exits 2 on mismatch. Create verifies before publishing the output.
@@ -136,7 +160,9 @@ in `vector_png.py` for the exact allowlists.
 Only `url(#id)` references to local gradients and clip paths are accepted.
 References inside these definitions are forbidden.
 
-CSS/style, event handlers, scripts, animation, use, images (including data URLs),
+The original four commands reject CSS/style. The explicit normalization input
+subset is documented separately in NORMALIZATION.md. Event handlers, scripts,
+animation, use, images (including data URLs),
 foreignObject, links and external resources are rejected. A deny-all resource
 fetcher also protects the CairoSVG renderer. No `unsafe=True` path exists.
 Processing instructions are rejected; a standard XML declaration is accepted.
@@ -169,14 +195,16 @@ tests, package builds and a standalone skill roundtrip/smoke test. Windows also
 tests the installer. A configured matrix is not evidence that all platforms have
 passed; see [TEST_RESULTS.md](TEST_RESULTS.md) for recorded local/remote results
 and [GitHub Actions](https://github.com/makotosan/vector-png/actions) for current
-runs. The standalone helper is a byte-for-byte copy of `vector_png.py`;
-CI checks that the copies stay synchronized.
+runs. The standalone helper modules match vector_png.py, vector_png_css.py and
+vector_png_normalize.py byte for byte. CI checks all three copies, installs
+Chromium and requires real normalization/convert tests on every matrix platform.
 
 ## OSS and licensing
 
 See [OSS_REVIEW.md](OSS_REVIEW.md) for related projects, upstream license sources
-and dependency obligations. This is an original small implementation, not a
-draw.io fork. No compared-project code or native binaries are vendored.
+and dependency obligations. This is a small implementation, not a draw.io fork. The normalization parser
+adapts MIT-licensed vector-png-spec fixture code with additional validation; its
+origin and changes are recorded in OSS_REVIEW.md. No native binaries are vendored.
 The MIT license covers this project's code, not a relicensing of dependencies,
 including CairoSVG (LGPL-3.0-or-later) and Pillow (MIT-CMU).
 
@@ -205,9 +233,9 @@ conformance. Updating the baseline requires reviewing upstream changes and updat
 the pin, compatibility record, relevant tests and bilingual documentation together.
 
 The reviewed baseline includes the optional SVG Normalization Profile v1.
-This CLI does not implement it: CSS/class/marker/ARIA input remains unsupported,
-and there are no `normalize` or `convert` commands. Existing wire v1 files need
-no migration. See [compatibility details](SPEC_COMPATIBILITY.md).
+Version 0.2.0 implements it experimentally through explicit normalize/convert;
+the original four commands still reject CSS/class/marker/ARIA input. Existing
+wire v1 files need no format migration. See [compatibility details](SPEC_COMPATIBILITY.md).
 
 Text rendering uses grayscale antialiasing with hint style and hint metrics
 disabled inside each worker, avoiding display-dependent LCD color fringes.

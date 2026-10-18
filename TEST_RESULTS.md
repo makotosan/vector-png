@@ -84,3 +84,41 @@ hint metrics. The regression also requires the black text region to remain
 monochrome. Comparison is still exact; no tolerance or Windows skip is added.
 Previously rendered text PNGs may mismatch; keep originals and use trusted SVG
 to create a separate new file. New CI results must be checked independently.
+
+## Explicit normalization implementation, version 0.2.0 (2026-10-19)
+
+- Specification pin remains 8238ebdaa136f448affa53133b99ee5afde5765a.
+  Implemented normalization sections 2–7 and the section-8 CLI proposals under
+  the existing SPEC sections 5–7 import/writer policy. Wire v1 is unchanged.
+- Production structure processing adapts the pinned MIT fixture transformer
+  with defused bounded XML parsing, early validation of losing references,
+  strict marker path parsing, accessibility cycles, complete safe-output checks
+  and a separate no-clobber publication pipeline. The upstream helper alone
+  is not presented as a production security boundary.
+- Final local full suite before the last report distinction: **117 passed,
+  1 skipped** on Windows / Python 3.13. The skip is symlink creation unavailable
+  to this user; hardlink aliases, existing reports and rollback were tested.
+  The earlier full run was 115 passed/1 skipped, before two additional cases.
+- Optional-only suite after those cases: **74 passed, 1 skipped**. It used
+  Playwright **1.64.0**, Chromium **156.0.8078.4**, CairoSVG 2.9.1, Pillow 13.0.0,
+  tinycss2 1.5.1 and defusedxml 0.7.1. Real rendering tests were required.
+- Final targeted checks: **4 passed**, covering the added PNG-preview-failure report distinction,
+  real nameplate conversion, alias/no-clobber/rollback and render mismatch.
+  A pixel mismatch is not mislabeled container corruption; independent Chromium
+  normalization and CairoSVG PNG-preview outcomes remain separate.
+- Actual Chromium tests cover cascade/group opacity, CSS rounded rectangles,
+  two restricted triangle arrows, metadata migration/loss and the complete
+  synthetic nameplate. Nameplate PNG extraction equals the normalized golden
+  SVG bytes; source bytes remain unchanged. Unsafe samples are rejected before
+  browser launch. These are finite fixture results, not complete certification.
+- Standalone normalization_check.py passed normalize, convert and exact
+  extraction using the distributed helper modules. Version 0.2.0 source archive
+  and universal wheel built successfully, including the three CLI modules.
+- README, INSTALL, CONTRIBUTING, SPEC_COMPATIBILITY and the new NORMALIZATION
+  English/Japanese pairs were compared section by section for full semantic
+  parity, commands, tables, references, limits and compatibility claims.
+  The skill frontmatter validator also passed.
+- Expanded CI requires optional dependencies/Chromium and real rendering on
+  Windows/macOS/Linux × Python 3.10/3.13, tests the Windows installer with
+  -WithNormalization and checks all three helper copies. Current remote results
+  must be read from GitHub Actions; configuration alone is not a pass.

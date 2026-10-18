@@ -22,7 +22,7 @@ Set-Location vector-png
 1. `skills/vector-png` をユーザースキルの保存先へコピー
 2. スキル内に専用の Python 仮想環境 `.venv` を作成
 3. `requirements.txt` の依存ライブラリを導入
-4. create／extract／update／inspect の全コマンドで往復テストを実施
+4. create／extract／update／inspect の既存 PNG 4 コマンドで往復テストを実施
 
 システム全体の PATH は変更しません。失敗時は診断用にコピー先を残します。
 再実行すると既存フォルダーとして拒否されるため、内容を確認し、必要に応じて
@@ -95,6 +95,33 @@ python -m venv "$HOME/.agents/skills/vector-png/.venv"
 export DYLD_FALLBACK_LIBRARY_PATH="$(brew --prefix)/lib"
 ```
 
+## 任意の正規化対応
+
+Windows で normalize／convert を有効にした新しいスキルを導入する場合：
+
+```powershell
+./install-vector-png.ps1 -WithNormalization
+```
+
+requirements-normalization.txt の導入、固定した Playwright Chromium の取得、
+normalization_check.py の実行を追加します。既存スキルは引き続き拒否します。
+既存スキルはローカル設定を確認して保持・名前変更した後、新しいコピーを導入してください。
+唯一のコピーを消したり、異なる版の補助モジュールを混在させたりしないでください。
+
+コピー済みの macOS／Linux のスキルでは、専用の Python で任意の依存先を導入します。
+
+```sh
+"$HOME/.agents/skills/vector-png/.venv/bin/python" -m pip install -r "$HOME/.agents/skills/vector-png/requirements-normalization.txt"
+"$HOME/.agents/skills/vector-png/.venv/bin/python" -m playwright install chromium
+"$HOME/.agents/skills/vector-png/.venv/bin/python" "$HOME/.agents/skills/vector-png/scripts/normalization_check.py" --output-dir "$(mktemp -d)"
+```
+
+Linux でシステム依存先が不足する場合は、ブラウザー導入のコマンドに --with-deps を追加できます。
+管理者権限が必要な場合があります。各手順の成功確認は維持してください。
+PLAYWRIGHT_BROWSERS_PATH でブラウザーのキャッシュ配置先を指定でき、導入とスキルの呼び出しで
+同じ設定を使います。任意の依存先・ブラウザーがなくても、既存の 4 コマンドは動作し、
+正規化は安全に失敗します。対応範囲とレポートは [NORMALIZATION.ja.md](NORMALIZATION.ja.md) を参照してください。
+
 ## 導入結果と Codex での利用確認
 
 1. 往復テストの出力が `"roundtrip": "passed"` になっていることを確認します。
@@ -124,3 +151,4 @@ python -m pytest -q
 書き込み可能な作業フォルダーに変更できます。
 
 [English installation guide に戻る](INSTALL.md)
+

@@ -4,6 +4,8 @@ permissions:
   contents: read
 jobs:
   test:
+    env:
+      VECTOR_PNG_REQUIRE_NORMALIZATION: '1'
     strategy:
       fail-fast: false
       matrix:
@@ -38,9 +40,11 @@ jobs:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
         run: |
           "VECTOR_PNG_CAIRO_DIR=$env:MSYS2_LOCATION\ucrt64\bin" >> $env:GITHUB_ENV
-      - run: python -m pip install -e ".[test]" build
+      - run: python -m pip install -e ".[test,normalize]" build
+      - name: Install controlled SVG2 renderer
+        run: python -m playwright install --with-deps chromium
       - name: Verify standalone skill matches package
-        run: python -c "from pathlib import Path; assert Path('vector_png.py').read_bytes() == Path('skills/vector-png/scripts/vector_png.py').read_bytes()"
+        run: python -c "from pathlib import Path; names=['vector_png.py','vector_png_css.py','vector_png_normalize.py']; assert all(Path(n).read_bytes() == (Path('skills/vector-png/scripts') / n).read_bytes() for n in names)"
       - run: python -m pytest -q
       - run: python -m build
       - name: Standalone skill smoke test
@@ -48,10 +52,11 @@ jobs:
           python skills/vector-png/scripts/vector_png.py create examples/fireworks.svg skill-smoke.png --width 256 --height 256
           python skills/vector-png/scripts/vector_png.py inspect skill-smoke.png
           python skills/vector-png/scripts/roundtrip_check.py --output-dir skill-roundtrip
+          python skills/vector-png/scripts/normalization_check.py --output-dir normalization-roundtrip
       - name: Install user skill on Windows and verify roundtrip
         if: runner.os == 'Windows'
         shell: pwsh
-        run: ./install-vector-png.ps1 -CairoDirectory $env:VECTOR_PNG_CAIRO_DIR
+        run: ./install-vector-png.ps1 -CairoDirectory $env:VECTOR_PNG_CAIRO_DIR -WithNormalization
 
   specification-reference:
     name: Pinned specification fixture sanity (not implementation conformance)
@@ -74,7 +79,7 @@ jobs:
           assert pin['normative_document'] == 'SPEC.md'
           assert pin['informative_translation'] == 'SPEC.ja.md'
           assert pin['optional_input_profile'] == 'profiles/svg-normalization-v1.md'
-          assert pin['optional_input_profile_support'] == 'not-implemented'
+          assert pin['optional_input_profile_support'] == 'experimental-implemented'
           with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
               output.write('revision=' + pin['revision'] + '\n')
           PY
@@ -102,4 +107,5 @@ jobs:
               for local, original in [('normalization-input.svg', 'nameplate.input.svg'),
                                       ('normalization-safe.svg', 'nameplate.expected.svg')]:
                   assert (tests / 'fixtures' / local).read_bytes() == (upstream / original).read_bytes()
+              assert (tests / 'fixtures/normalization-cases.json').read_bytes() == (upstream / 'cases.json').read_bytes()
           PY

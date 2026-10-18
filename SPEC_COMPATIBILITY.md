@@ -41,23 +41,35 @@ SPEC section 5 and IMPLEMENTATIONS add the optional
 Wire v1, `vector-png.svg`, safe-svg-v1 and the original 21 container cases are unchanged.
 Existing files require no migration.
 
-Normalization sections 2–7 require validated/tokenized CSS, cascade and inheritance,
-restricted arrow expansion, accessibility migration, a controlled SVG2 before/after
-rendering gate, separate reports and transactional no-clobber publication.
-This implementation does **not** implement that optional profile: `normalize` and
-`convert` are not commands. The four existing commands continue to reject CSS,
-classes, markers and ARIA metadata rather than strip them. CairoSVG pixel checks
-on an already-safe SVG do not establish SVG2 normalization equivalence.
+Normalization sections 2–7 are implemented experimentally in version 0.2.0:
+bounded/tokenized CSS, cascade/inheritance, restricted arrows, metadata migration,
+independent safe output validation, controlled Chromium before/after RGBA
+comparison, reports and no-clobber pair publication with rollback on handled failure.
+The original four commands retain their strict input policy and exact CairoSVG
+comparison. Convert additionally runs the existing writer/reader checks; its
+CairoSVG PNG comparison is separate from the Chromium normalization gate.
 
-Regression tests use the pinned synthetic nameplate input and expected normalized
-SVG. They check rejection before rendering/publication, safe-output acceptance,
-byte-preserving PNG extraction and source/raster verification. These do not
-verify the upstream transformation or before/after appearance. Upstream
-normalization structural/catalog tests run separately in specification-reference
-CI with tinycss2; they do not certify this CLI as a normalizer.
-No production dependency, output vocabulary or extraction behavior changes.
-The renderer's local text policy changes as documented below.
-The outstanding audits above remain open.
+Tests adapt the pinned 24-case normalization catalog plus synthetic nameplate
+goldens and new regressions for overridden references, malformed CSS, metadata
+cycles, unused markers, resource bounds, output aliases, mismatch and publication
+rollback. Real CLI tests cover CSS cascade/group opacity, CSS rounded boxes,
+horizontal/returning arrows, accessibility loss and the nameplate PNG/extract
+roundtrip. See TEST_RESULTS.md for executed results; upstream structural fixture
+CI remains separate and cannot certify this implementation.
+
+Optional dependencies are tinycss2 and Playwright 1.64.0 with its Chromium.
+Additional local limits include 128-character CSS/marker numeric tokens, accessibility
+reference depth 32, 15-second transformation and 60-second browser deadlines,
+bounded IPC/report sizes and a 128 MB JavaScript heap. There is no hard native
+memory quota, public-upload sandbox, crash-atomic two-file commit or guarantee
+against malicious concurrent parent-directory replacement. No permissive CSS,
+render bypass, automatic extraction normalization or overwrite mode is provided.
+Exact mismatch (including floating-point/font differences) fails without output.
+Metadata losses are reported, not claimed equivalent. The Chromium transform
+gate does not assert that CairoSVG PNG pixels match Chromium. See the full scope,
+policies and report schema in [NORMALIZATION.md](NORMALIZATION.md).
+The outstanding container audits above remain open. Wire/output vocabulary and
+extraction are unchanged; optional importing and dependencies are added.
 
 ## Updating this record
 

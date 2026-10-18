@@ -22,7 +22,7 @@ The installer performs these steps:
 1. Copy `skills/vector-png` into your user skill directory.
 2. Create a dedicated Python virtual environment, `.venv`, inside the skill.
 3. Install dependencies from `requirements.txt`.
-4. Run a roundtrip check using all four commands: create/extract/update/inspect.
+4. Run a roundtrip check using the four existing PNG commands: create/extract/update/inspect.
 
 It does not change system-wide PATH. On failure it leaves the copied folder for
 diagnosis. A retry refuses that existing folder; inspect it and, if needed, move
@@ -95,6 +95,34 @@ set this before running Python:
 export DYLD_FALLBACK_LIBRARY_PATH="$(brew --prefix)/lib"
 ```
 
+## Optional normalization support
+
+For a new Windows skill installation with normalize/convert enabled:
+
+```powershell
+./install-vector-png.ps1 -WithNormalization
+```
+
+This additionally installs requirements-normalization.txt, downloads the pinned
+Playwright Chromium and runs normalization_check.py. It still refuses an existing
+skill. Preserve/rename an existing skill after reviewing its local configuration,
+then install the new copy; do not erase your only copy or mix helper versions.
+
+For a copied macOS/Linux skill, install optional dependencies using its own Python:
+
+```sh
+"$HOME/.agents/skills/vector-png/.venv/bin/python" -m pip install -r "$HOME/.agents/skills/vector-png/requirements-normalization.txt"
+"$HOME/.agents/skills/vector-png/.venv/bin/python" -m playwright install chromium
+"$HOME/.agents/skills/vector-png/.venv/bin/python" "$HOME/.agents/skills/vector-png/scripts/normalization_check.py" --output-dir "$(mktemp -d)"
+```
+
+On Linux, --with-deps may be added to the browser install command when system
+dependencies are missing; it may require administrator access. Keep each step's
+success check. PLAYWRIGHT_BROWSERS_PATH can select a browser-cache location; use
+the same setting when installing and invoking the skill. Without the optional
+dependencies/browser, the four existing commands still work, while normalization
+fails safely. See [NORMALIZATION.md](NORMALIZATION.md) for scope and reports.
+
 ## Verify installation and use in Codex
 
 1. Confirm the roundtrip output contains `"roundtrip": "passed"`. It checks PNG
@@ -125,3 +153,4 @@ Python to run `-m pytest -q`.
 workspace directory.
 
 [Return to the Japanese installation guide](INSTALL.ja.md)
+

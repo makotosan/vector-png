@@ -17,7 +17,7 @@ At that revision, read:
 - [safe-svg-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/safe-svg-v1.md): restricted SVG processing profile.
 - [IMPLEMENTATIONS.md](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/IMPLEMENTATIONS.md): implementation and migration guidance.
 - [Fixture catalog](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/fixtures/README.md): fixture usage and limitations.
-- [svg-normalization-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/svg-normalization-v1.md): optional input-processing profile; not implemented by this CLI.
+- [svg-normalization-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/svg-normalization-v1.md): optional input-processing profile; experimentally implemented by normalize/convert. See [NORMALIZATION.md](NORMALIZATION.md) for stricter local limits and verification.
 
 ## Before changing behavior
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vector-png"
-version = "0.1.0"
+version = "0.2.0"
 description = "Editable PNG files containing compressed SVG source"
 requires-python = ">=3.10"
 license = "MIT"
@@ -12,12 +12,14 @@ dependencies = ["Pillow>=11.3,<14", "CairoSVG>=2.8.2,<3", "defusedxml>=0.7.1,<1"
 
 [project.optional-dependencies]
 test = ["pytest>=8,<10"]
+normalize = ["tinycss2>=1.4,<2", "playwright==1.64.0"]
 
 [project.scripts]
 vector-png = "vector_png:main"
 
 [tool.setuptools]
-py-modules = ["vector_png"]
+py-modules = ["vector_png", "vector_png_css", "vector_png_normalize"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+

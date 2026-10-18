@@ -288,9 +288,24 @@ def main(argv=None):
     p.add_argument("--force", action="store_true")
     p = sub.add_parser("inspect")
     p.add_argument("png", type=Path)
+    for cmd in ("normalize", "convert"):
+        p = sub.add_parser(cmd)
+        p.add_argument("svg", type=Path)
+        p.add_argument("output", type=Path)
+        p.add_argument("--report", type=Path, required=True)
+        p.add_argument("--width", type=int)
+        p.add_argument("--height", type=int)
     args = parser.parse_args(argv)
     try:
-        if args.command == "inspect":
+        if args.command in {"normalize", "convert"}:
+            from vector_png_normalize import run, NormalizationError
+            try:
+                report = run(args.svg, args.output, args.report, png=args.command == "convert",
+                             width=args.width, height=args.height)
+            except NormalizationError as exc:
+                parser.exit(2, json.dumps(exc.report, ensure_ascii=False, indent=2) + "\n")
+            print(json.dumps(report, ensure_ascii=False, indent=2))
+        elif args.command == "inspect":
             report = inspect(args.png)
             print(json.dumps(report, ensure_ascii=False, indent=2))
             if not report["raster_matches_svg"]:

@@ -9,3 +9,6 @@ include AGENTS.md spec-reference.json CONTRIBUTING.md CONTRIBUTING.ja.md
 include SPEC_COMPATIBILITY.md SPEC_COMPATIBILITY.ja.md
 recursive-include tests/fixtures *.svg *.md
 recursive-include skills/vector-png/tests/fixtures *.svg
+include requirements-normalization.txt NORMALIZATION.md NORMALIZATION.ja.md
+recursive-include tests/fixtures *.json
+recursive-include skills/vector-png/tests/fixtures *.json

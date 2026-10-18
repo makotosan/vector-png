@@ -8,3 +8,6 @@ They contain original public test artwork, not customer material.
 Copyright (c) 2026 makotosan. MIT licensed; see the distribution's LICENSE.
 The expected SVG is a structural golden output, not a verified normalization report.
 Tests here exercise this CLI's rejection and safe-source roundtrip only.
+
+normalization-cases.json also copies the public cases.json catalog from that same
+pinned upstream fixtures/normalization directory under its MIT license.

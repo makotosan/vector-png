@@ -17,7 +17,7 @@
 - [safe-svg-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/safe-svg-v1.md)：制限付き SVG 処理プロファイル。
 - [IMPLEMENTATIONS.md](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/IMPLEMENTATIONS.md)：実装と移行の注意事項。
 - [テストデータ一覧](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/fixtures/README.md)：利用方法と制限。
-- [svg-normalization-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/svg-normalization-v1.md): 任意の入力処理プロファイルです。この CLI には未実装です。
+- [svg-normalization-v1](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/profiles/svg-normalization-v1.md): 任意の入力処理プロファイルです。normalize／convert で実験的に実装しています。より厳しいローカル上限と検証は [NORMALIZATION.ja.md](NORMALIZATION.ja.md) を参照してください。
 
 ## 振る舞いを変更する前に
 

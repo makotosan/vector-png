@@ -82,7 +82,8 @@ python vector_png.py update editable-art.png editable.svg revised.png
 python vector_png.py inspect revised.png
 ```
 
-インストール済みの `vector-png` コマンドでも同じ 4 コマンドを使用できます。
+インストール済みの `vector-png` コマンドでも、この 4 コマンドと、後述する任意の
+`normalize`／`convert` インポートコマンドを使用できます。
 単独スキルには `scripts/vector_png.py` を同梱しています。
 
 | コマンド | 動作 |
@@ -91,8 +92,12 @@ python vector_png.py inspect revised.png
 | `extract` | PNG と SVG の整合性を検証して SVG を抽出 |
 | `update` | 編集済み SVG から画像と埋め込みソースを同時に更新 |
 | `inspect` | メタデータと画像・ソースの整合性を検査し、JSON を出力 |
+| `normalize` | 制限付き CSS の SVG を明示的に正規化し、検証済み SVG とレポートの組を保存 |
+| `convert` | 制限付き CSS の SVG を正規化・検証して、PNG とレポートをまとめて保存 |
 
-既存の出力ファイルは `--force` がなければ上書きしません。
+既存の create／extract／update コマンドは `--force` がなければ既存出力を上書きしません。
+normalize／convert は既存出力を常に拒否し、入力・出力・レポートに異なるパスが必要です。
+これらに --force オプションはありません。
 同じファイルへの更新にも `--force` が必要です。不正入力では保存先を変更しません。
 エラー時の終了コードは 2 です。inspect は JSON を出力し、extract は
 元の UTF-8 SVG をそのまま書き出します。update は `--width`／`--height` で
@@ -105,13 +110,32 @@ python vector_png.py inspect revised.png
 `read(path) -> (svg_text, (width, height))`、`inspect(path) -> dict` です。
 描画は 20 秒のタイムアウト付きの別プロセスで実行します。
 
+## 任意の CSS 正規化
+
+2 つのインポートコマンドを使う前に、任意の依存先と Chromium を導入します。
+
+```sh
+python -m pip install -e ".[normalize]"
+python -m playwright install chromium
+python vector_png.py normalize examples/css-diagram.svg normalized.svg --report normalize-report.json
+python vector_png.py convert examples/css-diagram.svg diagram.png --report convert-report.json
+```
+
+両方とも元ファイルを保持し、制限付き CSS の解決、メタデータの移行、制限付き三角矢印の展開を行い、
+Chromium で描画した変換前後の RGBA の完全一致を要求します。convert は正規化した安全な SVG
+だけを埋め込み、PNG は CairoSVG で別に検証します。全動作、上限、レポート、導入、互換性は
+[NORMALIZATION.ja.md](NORMALIZATION.ja.md) に記載します。Windows インストーラーは
+`-WithNormalization` に対応し、既存の導入済みスキルを上書きしません。
+
 ## 形式 v1 と整合性
 
 単一フレームの標準 PNG です。ちょうど 1 つの `iTXt` チャンクに、
 Latin-1 のキーワード `vector-png.svg`、圧縮フラグ 1、圧縮方式 0（zlib）、
 空の言語・翻訳キーワードフィールド、UTF-8 の SVG テキストを格納します。
 書き込みには Pillow の `PngInfo.add_itxt(..., zip=True)` を使い、
-XML を再シリアライズせず、受け入れた元のソーステキストを保持します。
+XML を再シリアライズせず、受け入れた元のソーステキストを保持します。明示的な
+normalize／convert は先に変換後の SVG をシリアライズし、その後の抽出は元の CSS ではなく、
+正規化後のバイト列を保持します。
 読み込み側は有効な非空の言語フィールドも受け入れます。
 独自のクリティカルチャンクや base64 は使用しません。inspect の JSON にある
 `vector-png/1` は、このアプリ上の取り決めを示し、標準化された PNG 拡張ではありません。
@@ -119,7 +143,7 @@ draw.io が埋め込む図データの XML とは互換性がありません。
 
 通常の画像ビューアーはプラグインなしで画像を表示できます。画像編集ソフト、
 SNS、最適化ツールがメタデータを削除すると、SVG による再編集ができなくなります。
-署名や認証の仕組みはありません。4 コマンドすべてで、デコードした RGBA 画素と、
+署名や認証の仕組みはありません。元の 4 コマンドでは、デコードした RGBA 画素と、
 埋め込み SVG を同じ寸法で新たに描画した結果を比較します。
 extract／update は不一致を拒否し、inspect は真偽値の `raster_matches_svg` を報告し、
 不一致なら終了コード 2 を返します。create は出力を公開する前に検証します。
@@ -138,7 +162,8 @@ linearGradient、radialGradient、stop、clipPath です。fill、stroke、trans
 参照はローカルのグラデーションやクリップへの `url(#id)` に限定します。
 これらの定義の内部に参照を含めることは禁止します。
 
-CSS／style、イベント属性、スクリプト、アニメーション、use、画像（data URL を含む）、
+元の 4 コマンドは CSS／style を拒否します。明示的な正規化の入力の部分集合は
+NORMALIZATION.ja.md に別途記載します。イベント属性、スクリプト、アニメーション、use、画像（data URL を含む）、
 foreignObject、リンク、外部リソースを拒否します。CairoSVG の描画側でも、
 取得をすべて拒否する処理を適用します。`unsafe=True` の経路はありません。
 処理命令は拒否し、通常の XML 宣言は受け入れます。
@@ -172,15 +197,16 @@ Windows ではインストーラーも検証します。行列の設定だけで
 意味しません。記録済みのローカル・リモート結果は
 [TEST_RESULTS.md](TEST_RESULTS.md)、現在の実行状況は
 [GitHub Actions](https://github.com/makotosan/vector-png/actions) を参照してください。
-単独スキルの補助スクリプトは `vector_png.py` とバイト単位で同一であり、
-CI で両者の同期を検査します。
+単独スキルの補助モジュールは vector_png.py、vector_png_css.py、vector_png_normalize.py と
+バイト単位で同一です。CI は 3 組すべての同期を検査し、Chromium を導入して、
+行列内のすべての環境で実際の正規化・変換テストを必須にします。
 
 ## OSS とライセンス
 
 関連プロジェクト、上流のライセンス出典、依存先に対する義務は
-[OSS_REVIEW.md](OSS_REVIEW.md) を参照してください。独自の小さな実装であり、
-draw.io のフォークではありません。比較したプロジェクトのコードやネイティブ
-バイナリは同梱していません。MIT ライセンスはこのプロジェクトのコードに適用され、
+[OSS_REVIEW.md](OSS_REVIEW.md) を参照してください。小さな実装であり、draw.io のフォークではありません。正規化の解析処理は
+MIT ライセンスの vector-png-spec のテスト用コードを調整し、検証を追加しています。
+出典と変更は OSS_REVIEW.md に記録します。ネイティブバイナリは同梱しません。MIT ライセンスはこのプロジェクトのコードに適用され、
 CairoSVG（LGPL-3.0-or-later）や Pillow（MIT-CMU）などの依存先のライセンスを
 変更するものではありません。
 
@@ -209,9 +235,9 @@ CairoSVG（LGPL-3.0-or-later）や Pillow（MIT-CMU）などの依存先のラ�
 参照設定、互換性の記録、関連テスト、日英ドキュメントを同時に更新する必要があります。
 
 レビュー済みの基準には、任意の SVG Normalization Profile v1 が含まれます。
-この CLI はそのプロファイルに未対応です。CSS・class・marker・ARIA を含む入力は引き続き未対応で、
-`normalize` と `convert` コマンドはありません。既存の wire v1 ファイルの移行は不要です。
-詳細は[互換性の記録](SPEC_COMPATIBILITY.ja.md)を参照してください。
+バージョン 0.2.0 は明示的な normalize／convert によって実験的に実装します。
+元の 4 コマンドは CSS・class・marker・ARIA を含む入力を引き続き拒否します。既存の
+wire v1 ファイルの形式移行は不要です。詳細は[互換性の記録](SPEC_COMPATIBILITY.ja.md)を参照してください。
 
 テキストは各ワーカー内でグレースケールのアンチエイリアスを使い、ヒント方式と
 ヒントメトリクスを無効にして、ディスプレイに依存する LCD の色付き輪郭を避けます。

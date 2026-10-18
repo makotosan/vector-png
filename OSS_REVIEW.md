@@ -10,7 +10,7 @@ focused comparison, not a claim that no other similar project exists.
 | [Pillow](https://pillow.readthedocs.io/en/stable/PIL.html) | PNG encoding/decoding and compressed iTXt writing used here | [MIT-CMU](https://github.com/python-pillow/Pillow/blob/main/LICENSE) |
 | [defusedxml](https://github.com/tiran/defusedxml) | Restricts unsafe XML parsing, used here | [PSF](https://github.com/tiran/defusedxml/blob/main/LICENSE) |
 
-No compared project code was copied. The original application and skill are MIT.
+No code from the compared projects in the table was copied. The original application and skill are MIT.
 Dependencies retain their own licenses. CairoSVG is LGPL, so distributing it or a
 bundled application requires preserving applicable notices, source availability
 and replacement/relinking rights; the MIT label does not remove those obligations.
@@ -29,3 +29,23 @@ Build/test dependencies are development tools and are not bundled in the wheel.
 There is no verified interoperability with draw.io PNG files; vector-png rejects
 plain PNG or other embedded document formats without its own keyword. The
 convention is documented in README so other tools can implement it independently.
+
+
+## Normalization additions (2026-10-19)
+
+vector_png_css.py adapts tools/normalization_fixture.py from
+[vector-png-spec at 8238ebdaa136f448affa53133b99ee5afde5765a](https://github.com/makotosan/vector-png-spec/blob/8238ebdaa136f448affa53133b99ee5afde5765a/tools/normalization_fixture.py),
+Copyright (c) 2026 makotosan, MIT. The source-file attribution and repository/skill
+MIT license are retained. Production changes include defused bounded parsing,
+early reference checks, strict path lexing, metadata cycle handling, independent
+safe-output validation and separate controlled rendering/publication. The fixture
+helper alone is not presented as an audited sanitizer.
+
+Optional direct dependencies: tinycss2 (BSD-3-Clause, checked in installed
+1.5.1 license) and Playwright 1.64.0 (Apache-2.0; installed distribution LICENSE
+and NOTICE). Playwright's Chromium and its third-party components have separate
+notices; browser installation downloads them rather than embedding them in the
+repository or wheel. Review notices and exact transitive/native versions if
+redistributing an application or browser. No dependency is relicensed to MIT.
+The browser/driver and Python dependencies must be kept patched and retested;
+pinning for reproducibility is not a security guarantee.
